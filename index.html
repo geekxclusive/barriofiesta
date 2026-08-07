@@ -707,7 +707,11 @@
       <p><span data-en>Booked through this page? Fill this in and we'll verify it against the official bookings list, then send your badge by email within 48 hours.</span>
       <span data-de>Über diese Seite gebucht? Fülle dies aus — wir prüfen es gegen die offizielle Buchungsliste und senden dein Badge innerhalb von 48 Stunden per E-Mail.</span></p>
 
-      <form class="lead-form" onsubmit="return submitClaimForm(event)">
+      <form class="lead-form" name="badge-claim" method="POST" data-netlify="true" netlify-honeypot="claim-bot-field" onsubmit="return submitClaimForm(event)">
+        <input type="hidden" name="form-name" value="badge-claim">
+        <p style="display:none">
+          <label>Don't fill this out: <input name="claim-bot-field"></label>
+        </p>
         <div>
           <label for="claim-name"><span data-en>Booking name</span><span data-de>Buchungsname</span></label>
           <input type="text" id="claim-name" name="claim-name" required>
@@ -752,7 +756,11 @@
       <p><span data-en>Get the free VIP Decision Guide — see exactly what each tier includes, and why most people in the Insider Circle end up choosing VIP. Sent straight to your inbox.</span>
       <span data-de>Hol dir den kostenlosen VIP-Entscheidungsguide — sieh genau, was jede Kategorie beinhaltet, und warum sich die meisten für VIP entscheiden. Direkt in dein Postfach.</span></p>
 
-      <form class="lead-form" onsubmit="return submitLeadForm(event)">
+      <form class="lead-form" name="lead-guide" method="POST" data-netlify="true" netlify-honeypot="lead-bot-field" onsubmit="return submitLeadForm(event)">
+        <input type="hidden" name="form-name" value="lead-guide">
+        <p style="display:none">
+          <label>Don't fill this out: <input name="lead-bot-field"></label>
+        </p>
         <div>
           <label for="name"><span data-en>Full name</span><span data-de>Vollständiger Name</span></label>
           <input type="text" id="name" name="name" required>
@@ -1140,35 +1148,43 @@
     else if (consent !== 'rejected') { document.getElementById('cookie-banner').classList.add('show'); }
   })();
 
-  /* ---------- lead form stub ---------- */
+  /* ---------- lead form: Netlify Forms AJAX submit ---------- */
   function submitLeadForm(e){
     e.preventDefault();
-    var name = document.getElementById('name').value;
-    var email = document.getElementById('email').value;
-    var marketingOptin = document.getElementById('marketing-optin').checked;
-    console.log('Lead captured (wire this to your ESP):', { name: name, email: email, marketingOptin: marketingOptin });
-    // Note: marketingOptin should be sent to your ESP as a separate tag/field
-    // (e.g. Brevo "Marketing Consent" attribute) — do not use it to justify
-    // sending anything beyond the guide unless it's explicitly true.
+    var form = e.target;
     var isDe = document.querySelector('.lang-toggle button.active').dataset.lang === 'de';
-    alert(isDe ? 'Danke! Prüfe dein Postfach für den VIP-Entscheidungsguide.' : 'Thanks! Check your inbox for the VIP Decision Guide.');
-    e.target.reset();
+    fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(new FormData(form)).toString()
+    }).then(function(response){
+      if (!response.ok) { throw new Error('Form submission failed: ' + response.status); }
+      alert(isDe ? 'Danke! Prüfe dein Postfach für den VIP-Entscheidungsguide.' : 'Thanks! Check your inbox for the VIP Decision Guide.');
+      form.reset();
+    }).catch(function(err){
+      console.error(err);
+      alert(isDe ? 'Etwas ist schiefgelaufen. Bitte versuche es erneut.' : 'Something went wrong. Please try again.');
+    });
     return false;
   }
 
-  /* ---------- badge claim form stub ---------- */
+  /* ---------- badge claim form: Netlify Forms AJAX submit ---------- */
   function submitClaimForm(e){
     e.preventDefault();
-    var data = {
-      name: document.getElementById('claim-name').value,
-      email: document.getElementById('claim-email').value,
-      tier: document.getElementById('claim-tier').value,
-      ref: document.getElementById('claim-ref').value
-    };
-    console.log('Badge claim submitted (wire this to your ESP + verification workflow):', data);
+    var form = e.target;
     var isDe = document.querySelector('.lang-toggle button.active').dataset.lang === 'de';
-    alert(isDe ? 'Danke! Wir prüfen deine Buchung und senden dein Badge innerhalb von 48 Stunden.' : 'Thanks! We\'ll verify your booking and send your badge within 48 hours.');
-    e.target.reset();
+    fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(new FormData(form)).toString()
+    }).then(function(response){
+      if (!response.ok) { throw new Error('Form submission failed: ' + response.status); }
+      alert(isDe ? 'Danke! Wir prüfen deine Buchung und senden dein Badge innerhalb von 48 Stunden.' : 'Thanks! We\'ll verify your booking and send your badge within 48 hours.');
+      form.reset();
+    }).catch(function(err){
+      console.error(err);
+      alert(isDe ? 'Etwas ist schiefgelaufen. Bitte versuche es erneut.' : 'Something went wrong. Please try again.');
+    });
     return false;
   }
 </script>
