@@ -23,7 +23,13 @@ exports.handler = async function (event) {
     return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON body' }) };
   }
 
-  const { type, name, email, tier, ref, marketingOptin } = data;
+  const { type, name, email, tier, ref, marketingOptin, botField } = data;
+
+  // Server-side honeypot check: a filled hidden field almost certainly means a bot.
+  // Respond with success (so the bot doesn't learn anything useful) but do nothing.
+  if (botField) {
+    return { statusCode: 200, body: JSON.stringify({ success: true }) };
+  }
 
   // Basic validation
   if (!type || !name || !email) {
