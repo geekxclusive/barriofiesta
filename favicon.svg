@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Barrio Fiesta">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e8c964"/>
+      <stop offset="0.55" stop-color="#d4af37"/>
+      <stop offset="1" stop-color="#a5852a"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#0a0a0a"/>
+  <rect x="2.5" y="2.5" width="59" height="59" rx="11.5" fill="none" stroke="#8b7527" stroke-width="2"/>
+  <path d="M 32.00 11.50 L 37.05 25.04 L 51.50 25.67 L 40.18 34.66 L 44.05 48.58 L 32.00 40.60 L 19.95 48.58 L 23.82 34.66 L 12.50 25.67 L 26.95 25.04 Z" fill="url(#gold)"/>
+</svg>
